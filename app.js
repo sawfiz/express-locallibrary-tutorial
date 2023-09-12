@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
@@ -13,12 +15,21 @@ const app = express();
 // Set up mongoose connection
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
-const mongoDB = "mongodb+srv://sawfizup:jeb_pzj4nbk1QVP_avh@cluster0.ciyysqy.mongodb.net/local_library?retryWrites=true&w=majority";
 
-main().catch((err) => console.log(err));
-async function main() {
-  await mongoose.connect(mongoDB);
+async function connectToDatabase() {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Database connected');
+  } catch (error) {
+    console.error('Database connection error:', error);
+  }
 }
+
+// Connect to the database when the app starts
+connectToDatabase();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
